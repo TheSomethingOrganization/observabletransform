@@ -67,4 +67,22 @@ public class ObservableListFilterTest {
         transformedTest.unbind();
     }
 
+    @Test
+    public void removalTest() {
+        ObservableList<String> test = new ObservableArrayList<>();
+        for (int i = 0; i <= 100; i++)
+            test.add("#" + i);
+        TransformedObservableList<String> transformedTest =
+                ObservableLists.filter(test, simpleFiter);
+        transformedTest.bind();
+        test.remove(15);
+        String[] expectedResults1 = new String[] { "#1", "#10", "#11", "#12", "#13", "#14", "#16", "#17", "#18", "#19", "#100" };
+        checkListWithArray(transformedTest, expectedResults1);
+
+        test.subList(12, 16).clear();
+        String[] expectedResults2 = new String[] { "#1", "#10", "#11", "#17", "#18", "#19", "#100" };
+        checkListWithArray(transformedTest, expectedResults2);
+        transformedTest.unbind();
+    }
+
 }

@@ -137,7 +137,21 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
 
         @Override
         public void onItemRangeRemoved(ObservableList<T> sender, int positionStart, int itemCount) {
-            throw new UnsupportedOperationException();
+            if (itemCount == 1) {
+                if (isPositionAccepted(positionStart))
+                    transformed.remove(getInsertPosition(positionStart));
+                positions.remove(positionStart);
+                return;
+            }
+
+            int sp = getInsertPosition(positionStart);
+            int j = 0;
+            for (int i = 0; i < itemCount; i++) {
+                if (isPositionAccepted(positionStart + i))
+                    ++j;
+            }
+            transformed.subList(sp, sp + j).clear();
+            positions.subList(positionStart, positionStart + itemCount).clear();
         }
 
     }
