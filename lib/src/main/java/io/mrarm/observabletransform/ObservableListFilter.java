@@ -68,8 +68,9 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
     }
 
     private void addToInsertPositions(int fromIndex, int toIndex, int value) {
-        for (int i = fromIndex; i < toIndex; i++)
+        for (int i = fromIndex; i < toIndex; i++) {
             positions.set(i, makePositionInt(getInsertPosition(i) + value, isPositionAccepted(i)));
+        }
     }
 
     private void refilter() {
@@ -97,7 +98,89 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
 
         @Override
         public void onItemRangeChanged(ObservableList<T> sender, int positionStart, int itemCount) {
-            throw new UnsupportedOperationException();
+            int sp = getInsertPosition(positionStart);
+
+            if (itemCount == 1) {
+                boolean accepted = filter.filter(source.get(positionStart));
+                boolean wasAccepted = isPositionAccepted(positionStart);
+                if (accepted && wasAccepted) {
+                    transformed.set(sp, source.get(positionStart));
+                } else if (accepted /* && !wasAccepted - always true */) {
+                    transformed.add(sp, source.get(positionStart));
+                    positions.set(positionStart, makePositionInt(sp, true));
+                    addToInsertPositions(positionStart + 1, positions.size(), 1);
+                } else if (/* !accepted - always true && */wasAccepted) {
+                    transformed.remove(sp);
+                    positions.set(positionStart, makePositionInt(sp, false));
+                    addToInsertPositions(positionStart + 1, positions.size(),-1);
+                }
+                return;
+            }
+
+            boolean[] newAccepted = new boolean[itemCount];
+            for (int i = 0; i < itemCount; i++)
+                newAccepted[i] = filter.filter(source.get(positionStart + i));
+
+            int oldAcceptedCount = 0;
+            for (int i = 0; i < itemCount; i++) {
+                if (isPositionAccepted(positionStart + i))
+                    ++oldAcceptedCount;
+            }
+
+            // Handle deletion
+            int deleteStart = -1, deleteEnd = -1;
+            for (int i = itemCount - 1; i >= 0; --i) {
+                if (!isPositionAccepted(positionStart + i))
+                    continue;
+                if (!newAccepted[i]) {
+                    int j = getInsertPosition(positionStart + i);
+                    // mark for deletion
+                    if (deleteStart != -1)
+                        deleteStart = j;
+                    else
+                        deleteStart = deleteEnd = j;
+                } else if (deleteStart != -1) {
+                    if (deleteStart == deleteEnd)
+                        transformed.remove(deleteStart);
+                    else
+                        transformed.subList(deleteStart, deleteEnd + 1).clear();
+                    deleteStart = deleteEnd = -1;
+                }
+            }
+            if (deleteStart != -1) {
+                if (deleteStart == deleteEnd)
+                    transformed.remove(deleteStart);
+                else
+                    transformed.subList(deleteStart, deleteEnd + 1).clear();
+            }
+            // Now there are only items in the following states: (wasAccepted, isAccepted), (!wasAccepted, isAccepted), (!wasAccepted, !isAccepted)
+
+            // Handle insertion and index update
+            List<T> insertBuf = new ArrayList<>();
+            int insertBufStart = -1;
+            int j = sp;
+            for (int i = 0; i < itemCount; i++) {
+                boolean wasAccepted = isPositionAccepted(positionStart + i);
+                positions.set(positionStart + i, makePositionInt(j, newAccepted[i]));
+                if (!newAccepted[i])
+                    continue;
+                if (!wasAccepted) {
+                    if (insertBufStart == -1)
+                        insertBufStart = j;
+                    insertBuf.add(source.get(positionStart + i));
+                } else if (insertBufStart != -1) {
+                    transformed.addAll(insertBufStart, insertBuf);
+                    insertBuf.clear();
+                    insertBufStart = -1;
+                }
+                ++j;
+            }
+            if (insertBufStart != -1) {
+                transformed.addAll(insertBufStart, insertBuf);
+                insertBuf.clear();
+            }
+
+            addToInsertPositions(positionStart + itemCount, positions.size(), j - (sp + oldAcceptedCount));
         }
 
         @Override
