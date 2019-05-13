@@ -67,6 +67,11 @@ class ObservableListTransform<From, To> extends ReadOnlyListWrapper<To>
 
         @Override
         public void onChanged(ObservableList<From> sender) {
+            transformed.clear();
+            transformed.ensureCapacity(source.size());
+            for (int i = 0; i < source.size(); i++)
+                transformed.add(transform.transform(source.get(i)));
+
             if (listeners != null)
                 listeners.notifyChanged(ObservableListTransform.this);
         }
