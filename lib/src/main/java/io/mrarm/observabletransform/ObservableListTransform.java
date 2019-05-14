@@ -45,12 +45,7 @@ class ObservableListTransform<From, To> extends ReadOnlyListWrapper<To>
     public void bind() {
         if (bindCounter++ == 0) {
             source.addOnListChangedCallback(sourceListener);
-
-            if (transformed.size() != 0)
-                throw new IllegalStateException("transformed.size() != 0");
-            transformed.ensureCapacity(source.size());
-            for (int i = 0; i < source.size(); i++)
-                transformed.add(transform.transform(source.get(i)));
+            reapply();
         }
     }
 
@@ -62,15 +57,30 @@ class ObservableListTransform<From, To> extends ReadOnlyListWrapper<To>
         }
     }
 
+    @Override
+    public void reapply() {
+        transformed.clear();
+        transformed.ensureCapacity(source.size());
+        for (int i = 0; i < source.size(); i++)
+            transformed.add(transform.transform(source.get(i)));
+
+        if (listeners != null)
+            listeners.notifyChanged(this);
+    }
+
+    @Override
+    public void reapply(int startPosition, int itemCount) {
+        for (int i = 0; i < itemCount; i++)
+            transformed.set(startPosition + i, transform.transform(source.get(startPosition + i)));
+        if (listeners != null)
+            listeners.notifyChanged(this, startPosition, itemCount);
+    }
 
     private class SourceListener extends OnListChangedCallback<ObservableList<From>> {
 
         @Override
         public void onChanged(ObservableList<From> sender) {
-            transformed.clear();
-            transformed.ensureCapacity(source.size());
-            for (int i = 0; i < source.size(); i++)
-                transformed.add(transform.transform(source.get(i)));
+            reapply();
 
             if (listeners != null)
                 listeners.notifyChanged(ObservableListTransform.this);

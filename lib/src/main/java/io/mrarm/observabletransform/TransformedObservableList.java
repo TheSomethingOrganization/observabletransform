@@ -19,4 +19,18 @@ public interface TransformedObservableList<T> extends ObservableList<T> {
 
     void unbind();
 
+
+
+    /**
+     * Forcibly reapplies the transform to all the source items.
+     */
+    void reapply();
+
+    /**
+     * Reapplies the transform to the specified item range in the source list.
+     * @param startPosition range start position
+     * @param itemCount count of items from the start to reapply the filter to
+     */
+    void reapply(int startPosition, int itemCount);
+
 }

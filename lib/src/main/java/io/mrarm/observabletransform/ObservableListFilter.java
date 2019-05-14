@@ -23,7 +23,6 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
         this.source = source;
         this.filter = filter;
         transformed = (ObservableArrayList<T>) getWrapped();
-        refilter();
     }
 
     @Override
@@ -42,7 +41,7 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
     public void bind() {
         if (bindCounter++ == 0) {
             source.addOnListChangedCallback(sourceListener);
-            refilter();
+            reapply();
         }
     }
 
@@ -73,7 +72,8 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
         }
     }
 
-    private void refilter() {
+    @Override
+    public void reapply() {
         transformed.clear();
         positions.clear();
         int j = 0;
@@ -88,12 +88,17 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
         positions.add(makePositionInt(j, false));
     }
 
+    @Override
+    public void reapply(int positionStart, int itemCount) {
+        sourceListener.onItemRangeChanged(source, positionStart, itemCount);
+    }
+
 
     private class SourceListener extends OnListChangedCallback<ObservableList<T>> {
 
         @Override
         public void onChanged(ObservableList<T> sender) {
-            refilter();
+            reapply();
         }
 
         @Override
