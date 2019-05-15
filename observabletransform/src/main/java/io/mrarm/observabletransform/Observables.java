@@ -5,17 +5,17 @@ import androidx.databinding.ObservableInt;
 
 public class Observables {
 
-    public static TransformedObservableBoolean transform(ObservableInt source, IntBoolTransform transform) {
+    public static TransformedObservableBoolean booleanTransform(ObservableInt source, IntBoolTransform transform) {
         return new TransformedObservableBooleanImpl<>(source, (x) -> transform.transform(source.get()));
     }
-    public static TransformedObservableBoolean transform(ObservableBoolean source, BoolBoolTransform transform) {
+    public static TransformedObservableBoolean booleanTransform(ObservableBoolean source, BoolBoolTransform transform) {
         return new TransformedObservableBooleanImpl<>(source, (x) -> transform.transform(source.get()));
     }
 
-    public static TransformedObservableInt transform(ObservableInt source, IntIntTransform transform) {
+    public static TransformedObservableInt intTransform(ObservableInt source, IntIntTransform transform) {
         return new TransformedObservableIntImpl<>(source, (x) -> transform.transform(source.get()));
     }
-    public static TransformedObservableInt transform(ObservableBoolean source, BoolIntTransform transform) {
+    public static TransformedObservableInt intTransform(ObservableBoolean source, BoolIntTransform transform) {
         return new TransformedObservableIntImpl<>(source, (x) -> transform.transform(source.get()));
     }
 
