@@ -41,6 +41,8 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
     public void bind() {
         if (bindCounter++ == 0) {
             source.addOnListChangedCallback(sourceListener);
+            if (source instanceof Bindable)
+                ((Bindable) source).bind();
             reapply();
         }
     }
@@ -48,6 +50,8 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
     @Override
     public void unbind() {
         if (--bindCounter == 0) {
+            if (source instanceof Bindable)
+                ((Bindable) source).unbind();
             source.removeOnListChangedCallback(sourceListener);
             transformed.clear();
             positions.clear();

@@ -45,6 +45,8 @@ class ObservableListTransform<From, To> extends ReadOnlyListWrapper<To>
     public void bind() {
         if (bindCounter++ == 0) {
             source.addOnListChangedCallback(sourceListener);
+            if (source instanceof Bindable)
+                ((Bindable) source).bind();
             reapply();
         }
     }
@@ -52,6 +54,8 @@ class ObservableListTransform<From, To> extends ReadOnlyListWrapper<To>
     @Override
     public void unbind() {
         if (--bindCounter == 0) {
+            if (source instanceof Bindable)
+                ((Bindable) source).unbind();
             source.removeOnListChangedCallback(sourceListener);
             transformed.clear();
         }

@@ -26,14 +26,19 @@ class ObservableListSize<T> extends BindableObservableInt {
     public void bind() {
         if (bindCounter++ == 0) {
             source.addOnListChangedCallback(sourceListener);
+            if (source instanceof Bindable)
+                ((Bindable) source).bind();
             notifyChange();
         }
     }
 
     @Override
     public void unbind() {
-        if (--bindCounter == 0)
+        if (--bindCounter == 0) {
+            if (source instanceof Bindable)
+                ((Bindable) source).unbind();
             source.removeOnListChangedCallback(sourceListener);
+        }
     }
 
 
