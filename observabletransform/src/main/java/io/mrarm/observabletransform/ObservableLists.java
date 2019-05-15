@@ -14,4 +14,8 @@ public class ObservableLists {
         return new ObservableListFilter<>(from, transform);
     }
 
+    public static <T> BindableObservableInt size(ObservableList<T> list) {
+        return new ObservableListSize<>(list);
+    }
+
 }

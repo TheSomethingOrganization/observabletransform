@@ -13,13 +13,7 @@ import androidx.databinding.ObservableList;
  * then for the list to actually unbind() it should also be called twice.
  * A bind() on a child list should also call bind() on all parent lists (same applies to unbind())
  */
-public interface TransformedObservableList<T> extends ObservableList<T> {
-
-    void bind();
-
-    void unbind();
-
-
+public interface TransformedObservableList<T> extends ObservableList<T>, Bindable {
 
     /**
      * Forcibly reapplies the transform to all the source items.
