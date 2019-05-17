@@ -67,6 +67,22 @@ public class ObservableListFilterTest {
         transformedTest.unbind();
     }
 
+
+    @Test
+    public void insertionTest2() {
+        ObservableList<String> test = new ObservableArrayList<>();
+        TransformedObservableList<String> transformedTest =
+                ObservableLists.filter(test, simpleFiter);
+        transformedTest.bind();
+
+        for (int i = 0; i <= 100; i++)
+            test.add("#" + i);
+
+        String[] expectedResults = new String[] { "#1", "#10", "#11", "#12", "#13", "#14", "#15", "#16", "#17", "#18", "#19", "#100" };
+        checkListWithArray(transformedTest, expectedResults);
+        transformedTest.unbind();
+    }
+
     @Test
     public void removalTest() {
         ObservableList<String> test = new ObservableArrayList<>();
@@ -84,6 +100,23 @@ public class ObservableListFilterTest {
         checkListWithArray(transformedTest, expectedResults2);
         transformedTest.unbind();
     }
+
+    @Test
+    public void removalTest2() {
+        ObservableList<String> test = new ObservableArrayList<>();
+        TransformedObservableList<String> transformedTest =
+                ObservableLists.filter(test, simpleFiter);
+        transformedTest.bind();
+        for (int i = 0; i <= 100; i++)
+            test.add("#" + i);
+        while (!test.isEmpty())
+            test.remove(0);
+
+        String[] expectedResults = new String[] {};
+        checkListWithArray(transformedTest, expectedResults);
+        transformedTest.unbind();
+    }
+
 
     @Test
     public void updateSingleTest() {

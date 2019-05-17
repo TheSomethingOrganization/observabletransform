@@ -199,9 +199,10 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
             if (itemCount == 1) {
                 boolean accepted = filter.filter(source.get(positionStart));
                 positions.add(positionStart, makePositionInt(sp, accepted));
-                addToInsertPositions(positionStart + 1, positions.size(), 1);
-                if (accepted)
+                if (accepted) {
                     transformed.add(sp, source.get(positionStart));
+                    addToInsertPositions(positionStart + 1, positions.size(), 1);
+                }
                 return;
             }
 
@@ -230,8 +231,10 @@ class ObservableListFilter<T> extends ReadOnlyListWrapper<T>
         @Override
         public void onItemRangeRemoved(ObservableList<T> sender, int positionStart, int itemCount) {
             if (itemCount == 1) {
-                if (isPositionAccepted(positionStart))
+                if (isPositionAccepted(positionStart)) {
                     transformed.remove(getInsertPosition(positionStart));
+                    addToInsertPositions(positionStart + 1, positions.size(), -1);
+                }
                 positions.remove(positionStart);
                 return;
             }
