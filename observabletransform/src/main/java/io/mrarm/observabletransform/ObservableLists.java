@@ -18,4 +18,13 @@ public class ObservableLists {
         return new ObservableListSize<>(list);
     }
 
+    public static <T> BindableObservableBoolean containsMatching(
+            ObservableList<T> list, ObservableListContains.CheckFunction<T> check) {
+        return new ObservableListContains<>(list, check);
+    }
+
+    public static <T> BindableObservableBoolean contains(ObservableList<T> list, T value) {
+        return new ObservableListContains<>(list, value::equals);
+    }
+
 }
