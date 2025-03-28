@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
 
 group = 'com.github.mcmrarm'
 version = 'master-SNAPSHOT'
@@ -37,4 +38,26 @@ dependencies {
     implementation 'androidx.databinding:databinding-common:3.4.0'
     implementation 'androidx.databinding:databinding-runtime:3.4.0'
     testImplementation 'junit:junit:4.12'
+}
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.github.mcmrarm'
+                artifactId = 'observabletransform'
+                version = version
+
+                artifact("$buildDir/outputs/aar/observabletransform-debug.aar") {
+                    extension = 'aar'
+                }
+            }
+        }
+        repositories {
+            maven {
+                url = uri(System.getProperty("user.home") + "/.m2/repository")
+            }
+        }
+    }
 }
