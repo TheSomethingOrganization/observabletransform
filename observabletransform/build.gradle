@@ -2,16 +2,16 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'maven-publish'
 
-group = 'com.github.mcmrarm'
+group = 'io.kitsuri'
 version = 'master-SNAPSHOT'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 36
 
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 28
+        targetSdkVersion 36
         versionCode 1
         versionName "1.0"
 
@@ -33,11 +33,11 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.annotation:annotation:1.0.2'
-    implementation 'androidx.core:core:1.0.2'
-    implementation 'androidx.databinding:databinding-common:3.4.0'
-    implementation 'androidx.databinding:databinding-runtime:3.4.0'
-    testImplementation 'junit:junit:4.12'
+    implementation 'androidx.annotation:annotation:1.9.1'
+    implementation 'androidx.core:core:1.17.0'
+    implementation 'androidx.databinding:databinding-common:8.13.0'
+    implementation 'androidx.databinding:databinding-runtime:8.13.0'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 
@@ -45,7 +45,7 @@ afterEvaluate {
     publishing {
         publications {
             maven(MavenPublication) {
-                groupId = 'com.github.mcmrarm'
+                groupId = 'io.kitsuri'
                 artifactId = 'observabletransform'
                 version = version
 
