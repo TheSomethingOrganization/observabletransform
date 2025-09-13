@@ -2,9 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'maven-publish'
 
-group = 'io.kitsuri'
-version = 'master-SNAPSHOT'
-
 android {
     compileSdkVersion 36
 
@@ -24,8 +21,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
 }
@@ -41,23 +38,19 @@ dependencies {
 }
 
 
-afterEvaluate {
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                groupId = 'io.kitsuri'
-                artifactId = 'observabletransform'
-                version = version
+publishing {
+    publications {
+        release(MavenPublication) {
 
-                artifact("$buildDir/outputs/aar/observabletransform-debug.aar") {
-                    extension = 'aar'
-                }
-            }
-        }
-        repositories {
-            maven {
-                url = uri(System.getProperty("user.home") + "/.m2/repository")
-            }
+            groupId = 'io.kitsuri'
+            artifactId = 'observabletransform'
+            version = '1.0.0'
         }
     }
+
+    repositories {
+        mavenLocal()
+    }
 }
+
+
